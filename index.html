@@ -1,0 +1,99 @@
+<html>
+<head>
+  <style>
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .person {
+      margin-top: 20px;
+    }
+
+    select {
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Payment Tracker</h1>
+    <form onsubmit="addPerson(); return false;">
+      <input type="text" id="nameInput" placeholder="Enter name">
+      <button type="submit">Add Person</button>
+    </form>
+    <select id="personSelect" onchange="renderPerson()"></select>
+    <div id="personContainer">
+      <!-- Person information will be inserted here -->
+    </div>
+  </div>
+
+  <script>
+    const people = [];
+
+    function addPerson() {
+      const name = document.getElementById("nameInput").value;
+      if (!name) {
+        return;
+      }
+
+      if (people.find(person => person.name === name)) {
+        alert("Person already exists");
+        return;
+      }
+
+      const person = { name, ratings: [] };
+      people.push(person);
+      renderPeople();
+    }
+
+    function addRating(person) {
+      const rating = parseInt(prompt("Enter a rating (1-5)"), 10);
+      if (!rating || rating < 1 || rating > 5) {
+        return;
+      }
+
+      person.ratings.push(rating);
+      renderPerson();
+    }
+
+    function renderPeople() {
+      const personSelect = document.getElementById("personSelect");
+      personSelect.innerHTML = "";
+
+      for (const person of people) {
+        const option = document.createElement("option");
+        option.value = person.name;
+        option.text = person.name;
+        personSelect.appendChild(option);
+      }
+    }
+
+    function renderPerson() {
+      const personName = document.getElementById("personSelect").value;
+      const person = people.find(person => person.name === personName);
+      if (!person) {
+        return;
+      }
+
+      const ratings = person.ratings;
+
+      let ratingsSum = 0;
+      for (const rating of ratings) {
+        ratingsSum += rating;
+      }
+      const averageRating = ratings.length ? (ratingsSum / ratings.length) : 0;
+
+      const personContainer = document.getElementById("personContainer");
+      personContainer.innerHTML = `
+        <h2>${person.name}</h2>
+        <button onclick="addRating(people.find(person => person.name === '${person.name}'))">Add Rating</button>
+        <p>Average Rating: ${averageRating.toFixed(2)}</p>
+      `;
+    }
+  </script>
+</body>
+</html>
